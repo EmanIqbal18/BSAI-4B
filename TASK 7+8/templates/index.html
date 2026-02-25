@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Recipe Lab | Recipe Finder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+min-height:100vh;
+background:linear-gradient(135deg,#1d2671,#c33764);
+color:white;
+padding:40px 20px;
+}
+
+h1{
+text-align:center;
+font-size:42px;
+margin-bottom:30px;
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+}
+
+.search-box{
+background:rgba(255,255,255,0.1);
+padding:20px;
+border-radius:15px;
+backdrop-filter:blur(10px);
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+margin-bottom:40px;
+}
+
+.search-box input, .search-box select{
+flex:1;
+padding:12px;
+border-radius:8px;
+border:none;
+outline:none;
+font-size:15px;
+}
+
+.search-box button{
+padding:12px 20px;
+border:none;
+border-radius:8px;
+font-weight:600;
+cursor:pointer;
+background:#ff9a9e;
+color:black;
+transition:.3s;
+}
+
+.search-box button:hover{
+background:#fad0c4;
+transform:scale(1.05);
+}
+
+.recipes{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:25px;
+}
+
+.card{
+background:rgba(255,255,255,0.1);
+border-radius:15px;
+overflow:hidden;
+backdrop-filter:blur(12px);
+box-shadow:0 8px 20px rgba(0,0,0,.3);
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-8px);
+}
+
+.card img{
+width:100%;
+height:200px;
+object-fit:cover;
+}
+
+.card-body{
+padding:15px;
+}
+
+.card-body h3{
+font-size:18px;
+margin-bottom:10px;
+}
+
+.btn-group{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.card button{
+padding:8px 12px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-weight:600;
+transition:.3s;
+}
+
+.view-btn{
+background:#00f2fe;
+color:black;
+}
+
+.fav-btn{
+background:#ff758c;
+color:black;
+}
+
+.card button:hover{
+opacity:0.85;
+}
+
+.loader{
+display:none;
+margin:30px auto;
+border:6px solid rgba(255,255,255,.2);
+border-top:6px solid white;
+border-radius:50%;
+width:50px;
+height:50px;
+animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+100%{transform:rotate(360deg);}
+}
+
+/* MODAL */
+.modal{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.7);
+justify-content:center;
+align-items:center;
+padding:20px;
+}
+
+.modal-content{
+background:white;
+color:black;
+padding:25px;
+border-radius:15px;
+max-width:700px;
+width:100%;
+max-height:80vh;
+overflow-y:auto;
+}
+
+.close{
+float:right;
+cursor:pointer;
+font-size:20px;
+font-weight:bold;
+}
+
+ul{
+margin:10px 0;
+padding-left:20px;
+}
+
+footer{
+text-align:center;
+margin-top:50px;
+opacity:.8;
+}
+</style>
+</head>
+
+<body>
+
+<h1>The Recipe Lab</h1>
+
+<div class="container">
+
+<div class="search-box">
+<input type="text" id="ingredient" placeholder="Search by ingredient...">
+<select id="category">
+<option value="">All Categories</option>
+<option value="Seafood">Seafood</option>
+<option value="Chicken">Chicken</option>
+<option value="Vegetarian">Vegetarian</option>
+<option value="Dessert">Dessert</option>
+</select>
+<button onclick="searchRecipe()">Search</button>
+</div>
+
+<div class="loader" id="loader"></div>
+
+<div class="recipes" id="results"></div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal" id="recipeModal">
+<div class="modal-content">
+<span class="close" onclick="closeModal()">&times;</span>
+<div id="modalBody"></div>
+</div>
+</div>
+
+<footer>Be able to Find your favourite Recipe here</footer>
+
+<script>
+
+function searchRecipe(){
+let ingredient=document.getElementById("ingredient").value;
+let loader=document.getElementById("loader");
+let results=document.getElementById("results");
+
+results.innerHTML="";
+loader.style.display="block";
+
+fetch("/search",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({ingredient:ingredient})
+})
+.then(res=>res.json())
+.then(data=>{
+loader.style.display="none";
+
+if(!data.meals){
+results.innerHTML="<h2>No recipes found 😢</h2>";
+return;
+}
+
+data.meals.forEach(meal=>{
+results.innerHTML+=`
+<div class="card">
+<img src="${meal.strMealThumb}">
+<div class="card-body">
+<h3>${meal.strMeal}</h3>
+<div class="btn-group">
+<button class="view-btn" onclick="getDetails('${meal.idMeal}')">View</button>
+<button class="fav-btn" onclick="saveFavorite('${meal.strMeal}')">Save</button>
+</div>
+</div>
+</div>
+`;
+});
+});
+}
+
+function getDetails(id){
+fetch("/recipe/"+id)
+.then(res=>res.json())
+.then(data=>{
+let meal=data.meals[0];
+
+let ingredients="";
+for(let i=1;i<=20;i++){
+if(meal["strIngredient"+i]){
+ingredients+=`<li>${meal["strIngredient"+i]} - ${meal["strMeasure"+i]}</li>`;
+}
+}
+
+document.getElementById("modalBody").innerHTML=`
+<h2>${meal.strMeal}</h2>
+<img src="${meal.strMealThumb}" style="width:100%;border-radius:10px;margin:10px 0;">
+<h3>Ingredients:</h3>
+<ul>${ingredients}</ul>
+<h3>Instructions:</h3>
+<p>${meal.strInstructions}</p>
+${meal.strYoutube ? `<a href="${meal.strYoutube}" target="_blank">🎬 Watch Video</a>` : ""}
+`;
+
+document.getElementById("recipeModal").style.display="flex";
+});
+}
+
+function closeModal(){
+document.getElementById("recipeModal").style.display="none";
+}
+
+function saveFavorite(name){
+let favorites=JSON.parse(localStorage.getItem("favorites"))||[];
+favorites.push(name);
+localStorage.setItem("favorites",JSON.stringify(favorites));
+alert("Saved to favorites");
+}
+
+</script>
+
+</body>
+</html>
