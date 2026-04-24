@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Symptom Checker (Login page)</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-page">
+
+  <!-- Animated grid background -->
+  <div class="grid-bg"></div>
+  <div class="scan-line"></div>
+
+  <!-- Floating particles -->
+  <div class="particles" id="particles"></div>
+
+  <div class="login-wrapper">
+
+    <!-- Logo / brand -->
+    <div class="brand-block">
+      <div class="logo-hex">
+        <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="30,2 56,16 56,44 30,58 4,44 4,16" stroke="#00f5c4" stroke-width="1.5" fill="none"/>
+          <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="22" fill="#00f5c4" font-family="Orbitron">+</text>
+        </svg>
+      </div>
+      <h1 class="brand-name" style="word-spacing: 15px; letter-spacing: 3px; white-space: nowrap;">
+  SYMPTOM CHECKER
+</h1>
+      <p class="brand-tagline">AI Powered Symptom Diagnostics</p>
+    </div>
+
+    <!-- Login card -->
+    <div class="login-card">
+      <div class="card-header">
+        <span class="status-dot"></span>
+        <span class="card-label">SYSTEM ACCESS</span>
+      </div>
+
+      {% if error %}
+      <div class="alert-error">
+        <span class="alert-icon"></span> {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="POST" action="{{ url_for('login') }}" class="login-form">
+        <div class="field-group">
+          <label for="username">USER ID</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+            </span>
+            <input type="text" id="username" name="username" placeholder="Enter your username" autocomplete="off" required />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="password">ACCESS CODE</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </span>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary btn-login">
+          <span class="btn-text">INITIATE SESSION</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </form>
+
+      <p class="login-hint">Enter your Information</p>
+    </div>
+
+    <p class="footer-note">v1.0.0 &nbsp;·&nbsp; NLP + Groq AI &nbsp;·&nbsp; Flask</p>
+  </div>
+
+  <script>
+    // Generate floating particles
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.cssText = `
+        left: ${Math.random()*100}%;
+        top: ${Math.random()*100}%;
+        animation-delay: ${Math.random()*8}s;
+        animation-duration: ${6 + Math.random()*6}s;
+        width: ${2 + Math.random()*3}px;
+        height: ${2 + Math.random()*3}px;
+        opacity: ${0.2 + Math.random()*0.5};
+      `;
+      container.appendChild(p);
+    }
+  </script>
+</body>
+</html>
