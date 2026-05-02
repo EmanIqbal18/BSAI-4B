@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title> AI Symptom Checker (Dashboard)</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dashboard-page">
+
+  <div class="grid-bg"></div>
+  <div class="scan-line"></div>
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="logo-hex small">
+        <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="30,2 56,16 56,44 30,58 4,44 4,16" stroke="#00f5c4" stroke-width="1.5" fill="none"/>
+          <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="22" fill="#00f5c4" font-family="Orbitron">+</text>
+        </svg>
+      </div>
+      <span class="brand-name-sm">SYMPTOM CHECKER</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-panel="diagnose">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Diagnose
+      </a>
+      <a href="#" class="nav-item" data-panel="history-panel">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+        History
+      </a>
+      <a href="#" class="nav-item" data-panel="about-panel">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        About
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="user-avatar">{{ username[0].upper() }}</div>
+        <span class="user-name">{{ username }}</span>
+      </div>
+      <a href="{{ url_for('logout') }}" class="logout-btn" title="Logout">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="main-content">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h2 class="page-title" id="page-title">DIAGNOSTIC CONSOLE</h2>
+        <span class="system-status"><span class="status-dot pulse"></span> GROQ AI ONLINE</span>
+      </div>
+      <div class="topbar-right">
+        <span class="mono-time" id="clock"></span>
+      </div>
+    </header>
+
+    <!-- ── PANEL: DIAGNOSE ── -->
+    <section id="diagnose" class="panel active">
+
+      <div class="two-col">
+
+        <!-- Input column -->
+        <div class="input-col">
+          <div class="panel-card">
+            <div class="card-head">
+              <span class="ch-label">SYMPTOM INPUT</span>
+              <span class="ch-badge">NLP ANALYSIS</span>
+            </div>
+
+            <div class="symptom-tags-area" id="tagsArea">
+              <div id="tagsList" class="tags-list"></div>
+              <input type="text" id="symptomInput" class="tag-input"
+                     placeholder="Type a symptom and press Enter…"
+                     autocomplete="off" list="symptomSuggestions"/>
+              <datalist id="symptomSuggestions">
+                {% for s in symptoms_list %}
+                <option value="{{ s }}">
+                {% endfor %}
+              </datalist>
+            </div>
+
+            <div class="input-hint">
+              Press <kbd>Enter</kbd> or <kbd>,</kbd> to add · <kbd>Backspace</kbd> to remove
+            </div>
+
+            <div class="symptom-quick">
+              <span class="quick-label">QUICK ADD:</span>
+              <div class="quick-chips" id="quickChips">
+                <button class="chip" data-s="fever">fever</button>
+                <button class="chip" data-s="headache">headache</button>
+                <button class="chip" data-s="cough">cough</button>
+                <button class="chip" data-s="fatigue">fatigue</button>
+                <button class="chip" data-s="nausea">nausea</button>
+                <button class="chip" data-s="chest pain">chest pain</button>
+                <button class="chip" data-s="shortness of breath">shortness of breath</button>
+                <button class="chip" data-s="sore throat">sore throat</button>
+              </div>
+            </div>
+
+            <button class="btn-primary btn-analyze" id="analyzeBtn" onclick="analyze()">
+              <span class="btn-spinner" id="spinner" style="display:none"></span>
+              <span id="btnText">RUN ANALYSIS</span>
+              <span class="btn-arrow">⬡</span>
+            </button>
+
+            <div class="error-msg" id="errorMsg" style="display:none"></div>
+          </div>
+
+          <!-- Emergency warning -->
+          <div class="emergency-card" id="emergencyCard" style="display:none">
+            <div class="emg-icon"></div>
+            <div>
+              <strong>EMERGENCY ALERT</strong>
+              <p>Your symptoms may require immediate medical attention. Call emergency services now.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results column -->
+        <div class="results-col" id="resultsCol">
+          <div class="results-placeholder" id="resultsPlaceholder">
+            <div class="placeholder-icon">
+              <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" width="80">
+                <circle cx="40" cy="40" r="38" stroke="#00f5c4" stroke-width="1" stroke-dasharray="4 4" opacity="0.3"/>
+                <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="30" fill="#00f5c4" opacity="0.4" font-family="Orbitron">Rx</text>
+              </svg>
+            </div>
+            <p>Enter symptoms and run analysis<br>to see diagnostic results</p>
+          </div>
+
+          <div id="resultsContent" style="display:none">
+            <!-- Diseases injected here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- General advice strip (below both cols) -->
+      <div class="advice-strip" id="adviceStrip" style="display:none">
+        <div class="advice-icon"></div>
+        <div>
+          <span class="advice-label">GENERAL ADVICE</span>
+          <p id="adviceText"></p>
+        </div>
+      </div>
+
+      <div class="disclaimer-strip" id="disclaimerStrip" style="display:none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <span id="disclaimerText"></span>
+      </div>
+    </section>
+
+    <!-- ── PANEL: HISTORY ── -->
+    <section id="history-panel" class="panel">
+      <div class="panel-card">
+        <div class="card-head">
+          <span class="ch-label">DIAGNOSTIC HISTORY</span>
+          <button class="ch-badge btn-sm" onclick="loadHistory()">↻ REFRESH</button>
+        </div>
+        <div id="historyList">
+          {% if history %}
+            {% for h in history %}
+            <div class="history-item">
+              <div class="hi-meta">
+                <span class="hi-time">{{ h.timestamp }}</span>
+                <span class="hi-symptoms">{{ h.symptoms | join(', ') }}</span>
+              </div>
+              <div class="hi-diseases">
+                {% for d in h.result.diseases %}
+                <span class="severity-badge sev-{{ (d.severity or 'unknown') | lower }}">{{ d.name }} — {{ d.confidence }}%</span>
+                {% endfor %}
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <p class="empty-state">No history yet. Run your first analysis!</p>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PANEL: ABOUT ── -->
+    <section id="about-panel" class="panel">
+      <div class="panel-card about-card">
+        <div class="card-head"><span class="ch-label">ABOUT SYMPTOBOT</span></div>
+        <div class="about-grid">
+          <div class="about-block">
+            <h3> NLP + AI Engine</h3>
+            <p>SymptoBot uses <strong>Groq's LLaMA 3 70B</strong> model to analyze symptom combinations and predict possible diseases with confidence scores.</p>
+          </div>
+          <div class="about-block">
+            <h3> Tech Stack</h3>
+            <p><strong>Flask</strong> — Python web framework<br>
+               <strong>Groq API</strong> — Ultra-fast LLM inference<br>
+               <strong>NLP</strong> — Natural language processing<br>
+               <strong>CSV Dataset</strong> — Symptom reference data</p>
+          </div>
+          <div class="about-block">
+            <h3> Features</h3>
+            <p>Multi-disease detection · Confidence scoring · Severity classification · Health recommendations · Session history · Emergency alerts</p>
+          </div>
+          <div class="about-block">
+            <h3> Disclaimer</h3>
+            <p>Symptom Checker is an academic project for educational purposes only. It is <strong>not a substitute</strong> for professional medical advice, diagnosis, or treatment.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+  // ── Clock ──────────────────────────────────────────────────────────────────
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      now.toLocaleTimeString('en-US', {hour12: false}) + ' PKT';
+  }
+  setInterval(updateClock, 1000); updateClock();
+
+  // ── Panel switching ────────────────────────────────────────────────────────
+  const titles = {
+    'diagnose': 'DIAGNOSTIC CONSOLE',
+    'history-panel': 'SESSION HISTORY',
+    'about-panel': 'SYSTEM INFO'
+  };
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      const target = item.dataset.panel;
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById(target).classList.add('active');
+      document.getElementById('page-title').textContent = titles[target] || target.toUpperCase();
+    });
+  });
+
+  // ── Symptom tag input ──────────────────────────────────────────────────────
+  const symptoms = new Set();
+  const tagsList = document.getElementById('tagsList');
+  const symptomInput = document.getElementById('symptomInput');
+
+  function addSymptom(val) {
+    val = val.trim().toLowerCase();
+    if (!val || symptoms.has(val) || symptoms.size >= 15) return;
+    symptoms.add(val);
+    const tag = document.createElement('div');
+    tag.className = 'symptom-tag';
+    tag.innerHTML = `<span>${val}</span><button onclick="removeTag(this,'${val}')">×</button>`;
+    tagsList.appendChild(tag);
+  }
+
+  function removeTag(btn, val) {
+    symptoms.delete(val);
+    btn.parentElement.remove();
+  }
+
+  symptomInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      addSymptom(symptomInput.value.replace(',',''));
+      symptomInput.value = '';
+    } else if (e.key === 'Backspace' && !symptomInput.value) {
+      const tags = tagsList.querySelectorAll('.symptom-tag');
+      if (tags.length) {
+        const last = tags[tags.length - 1];
+        const val = last.querySelector('span').textContent;
+        symptoms.delete(val);
+        last.remove();
+      }
+    }
+  });
+
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => addSymptom(chip.dataset.s));
+  });
+
+  // ── Analyze ────────────────────────────────────────────────────────────────
+  async function analyze() {
+    if (symptoms.size === 0) {
+      showError('Please add at least one symptom.');
+      return;
+    }
+    setLoading(true);
+    hideError();
+
+    try {
+      const res = await fetch('/predict', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({symptoms: [...symptoms].join(', ')})
+      });
+      const data = await res.json();
+      if (!res.ok) { showError(data.error || 'Server error.'); return; }
+      renderResults(data);
+    } catch(err) {
+      showError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function renderResults(data) {
+    const el = document.getElementById('resultsContent');
+    document.getElementById('resultsPlaceholder').style.display = 'none';
+    el.style.display = 'block';
+
+    // Emergency
+    document.getElementById('emergencyCard').style.display =
+      data.seek_emergency ? 'flex' : 'none';
+
+    // Diseases
+    let html = '';
+    data.diseases.forEach((d, i) => {
+      const sevClass = `sev-${d.severity.toLowerCase()}`;
+      html += `
+        <div class="disease-card animate-in" style="animation-delay:${i*0.12}s">
+          <div class="dc-top">
+            <div>
+              <h3 class="dc-name">${d.name}</h3>
+              <span class="severity-badge ${sevClass}">${d.severity}</span>
+            </div>
+            <div class="confidence-ring" data-conf="${d.confidence}">
+              <svg viewBox="0 0 36 36" class="ring-svg">
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#1a2535" stroke-width="3"/>
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#00f5c4"
+                  stroke-width="3" stroke-dasharray="${d.confidence} 100"
+                  stroke-linecap="round" transform="rotate(-90 18 18)"/>
+              </svg>
+              <span class="ring-pct">${d.confidence}%</span>
+            </div>
+          </div>
+          <p class="dc-desc">${d.description}</p>
+          <div class="dc-recs">
+            <span class="recs-label">RECOMMENDATIONS</span>
+            <ul>
+              ${d.recommendations.map(r => `<li>${r}</li>`).join('')}
+            </ul>
+          </div>
+        </div>`;
+    });
+    el.innerHTML = html;
+
+    // Advice
+    if (data.general_advice) {
+      document.getElementById('adviceStrip').style.display = 'flex';
+      document.getElementById('adviceText').textContent = data.general_advice;
+    }
+    // Disclaimer
+    if (data.disclaimer) {
+      document.getElementById('disclaimerStrip').style.display = 'flex';
+      document.getElementById('disclaimerText').textContent = data.disclaimer;
+    }
+  }
+
+  function setLoading(on) {
+    document.getElementById('spinner').style.display = on ? 'inline-block' : 'none';
+    document.getElementById('btnText').textContent = on ? 'ANALYZING…' : 'RUN ANALYSIS';
+    document.getElementById('analyzeBtn').disabled = on;
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorMsg');
+    el.textContent = msg; el.style.display = 'block';
+  }
+  function hideError() {
+    document.getElementById('errorMsg').style.display = 'none';
+  }
+
+  async function loadHistory() {
+    const res = await fetch('/history');
+    const data = await res.json();
+    const list = document.getElementById('historyList');
+    if (!data.length) { list.innerHTML = '<p class="empty-state">No history yet.</p>'; return; }
+    list.innerHTML = data.map(h => `
+      <div class="history-item">
+        <div class="hi-meta">
+          <span class="hi-time">${h.timestamp}</span>
+          <span class="hi-symptoms">${h.symptoms.join(', ')}</span>
+        </div>
+        <div class="hi-diseases">
+          ${h.result.diseases.map(d =>
+            `<span class="severity-badge sev-${d.severity.toLowerCase()}">${d.name} — ${d.confidence}%</span>`
+          ).join('')}
+        </div>
+      </div>`).join('');
+  }
+  </script>
+</body>
+</html>
