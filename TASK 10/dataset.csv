@@ -1,0 +1,42 @@
+Disease,Symptom_1,Symptom_2,Symptom_3,Symptom_4,Symptom_5,Symptom_6,Symptom_7
+Fungal infection,itching,skin rash,nodal skin eruptions,dischromic patches,,,
+Allergy,continuous sneezing,shivering,chills,watering from eyes,,,
+GERD,stomach pain,acidity,ulcers on tongue,vomiting,cough,chest pain,
+Chronic cholestasis,itching,vomiting,yellowish skin,nausea,loss of appetite,abdominal pain,
+Drug Reaction,itching,skin rash,stomach pain,burning micturition,spotting urination,,
+Peptic ulcer disease,vomiting,indigestion,loss of appetite,abdominal pain,,,
+AIDS,muscle wasting,patches in throat,high fever,extra marital contacts,,,
+Diabetes,fatigue,weight loss,restlessness,lethargy,irregular sugar level,blurred vision,obesity
+Gastroenteritis,vomiting,sunken eyes,dehydration,diarrhoea,,,
+Bronchial Asthma,fatigue,cough,high fever,breathlessness,family history,mucoid sputum,
+Hypertension,headache,chest pain,dizziness,loss of balance,lack of concentration,,
+Migraine,acidity,indigestion,headache,blurred vision,excessive hunger,stiff neck,depression
+Cervical spondylosis,back pain,weakness in limbs,neck pain,dizziness,loss of balance,,
+Paralysis,vomiting,headache,weakness in limbs,altered sensorium,,,
+Jaundice,itching,vomiting,fatigue,weight loss,high fever,yellowish skin,dark urine
+Malaria,chills,vomiting,high fever,sweating,headache,nausea,diarrhoea
+Chicken pox,itching,skin rash,fatigue,lethargy,high fever,headache,loss of appetite
+Dengue,skin rash,chills,joint pain,vomiting,fatigue,high fever,headache
+Typhoid,chills,vomiting,fatigue,high fever,headache,nausea,constipation
+Hepatitis A,joint pain,vomiting,yellowish skin,dark urine,nausea,loss of appetite,abdominal pain
+Hepatitis B,itching,fatigue,lethargy,yellowish skin,dark urine,loss of appetite,abdominal pain
+Hepatitis C,fatigue,yellowish skin,nausea,loss of appetite,family history,,
+Hepatitis D,joint pain,vomiting,fatigue,yellowish skin,dark urine,nausea,loss of appetite
+Hepatitis E,joint pain,vomiting,fatigue,high fever,yellowish skin,dark urine,nausea
+Alcoholic hepatitis,vomiting,yellowish skin,abdominal pain,swelling of stomach,history of alcohol consumption,,
+Tuberculosis,chills,vomiting,fatigue,weight loss,cough,high fever,breathlessness
+Common Cold,continuous sneezing,chills,fatigue,cough,high fever,headache,swelled lymph nodes
+Pneumonia,chills,fatigue,cough,high fever,breathlessness,sweating,malaise
+Piles,constipation,pain during bowel movements,pain in anal region,bloody stool,irritation in anus,,
+Heart attack,vomiting,breathlessness,sweating,chest pain,,,
+Varicose veins,fatigue,cramps,bruising,obesity,swollen legs,swollen blood vessels,prominent veins on calf
+Hypothyroidism,fatigue,weight gain,cold hands and feet,constipation,puffy face,enlarged thyroid,brittle nails
+Hyperthyroidism,fatigue,mood swings,weight loss,restlessness,sweating,diarrhoea,fast heart rate
+Hypoglycemia,fatigue,anxiety,cold hands and feet,sweating,headache,nausea,blurred vision
+Osteoarthritis,joint pain,neck pain,knee pain,hip joint pain,swelling joints,,
+Arthritis,muscle weakness,stiff neck,swelling joints,movement stiffness,painful walking,,
+Vertigo,vomiting,headache,nausea,spinning movements,loss of balance,unsteadiness,
+Acne,skin rash,pus filled pimples,blackheads,scarring,,,
+Urinary tract infection,burning micturition,bladder discomfort,foul smell of urine,continuous feel of urine,,,
+Psoriasis,skin rash,joint pain,skin peeling,silver like dusting,small dents in nails,inflammatory nails,
+Impetigo,skin rash,high fever,blister,red sore around nose,yellow crust ooze,,

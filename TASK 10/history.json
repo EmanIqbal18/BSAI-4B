@@ -1,0 +1,78 @@
+[
+  {
+    "id": 1,
+    "username": "Eman",
+    "symptoms": [
+      "nausea",
+      "chest pain"
+    ],
+    "result": {
+      "diseases": [
+        {
+          "name": "Acute Coronary Syndrome",
+          "confidence": 80,
+          "description": "A condition where the blood flow to the heart is blocked, causing chest pain and nausea.",
+          "severity": "Severe",
+          "recommendations": [
+            "Call emergency services immediately",
+            "Chew an aspirin if prescribed by a doctor",
+            "Stay calm and still until help arrives"
+          ]
+        },
+        {
+          "name": "Gastroesophageal Reflux Disease (GERD)",
+          "confidence": 40,
+          "description": "A condition where stomach acid flows back into the esophagus, causing chest pain and nausea.",
+          "severity": "Mild",
+          "recommendations": [
+            "Avoid trigger foods",
+            "Elevate the head of the bed",
+            "Take antacids as directed"
+          ]
+        }
+      ],
+      "general_advice": "If you are experiencing severe chest pain or difficulty breathing, call emergency services immediately. For mild symptoms, try to manage stress, eat smaller meals, and avoid lying down after eating.",
+      "seek_emergency": true,
+      "disclaimer": "This is not a substitute for professional medical advice."
+    },
+    "timestamp": "2026-05-02 08:09:57"
+  },
+  {
+    "id": 2,
+    "username": "Eman",
+    "symptoms": [
+      "fatigue",
+      "cough"
+    ],
+    "result": {
+      "diseases": [
+        {
+          "name": "Common Cold",
+          "confidence": 70,
+          "description": "A viral infection that affects the upper respiratory system, causing symptoms like cough and fatigue.",
+          "severity": "Mild",
+          "recommendations": [
+            "rest and stay hydrated",
+            "use a humidifier to relieve cough",
+            "take over-the-counter pain relievers like acetaminophen"
+          ]
+        },
+        {
+          "name": "Influenza",
+          "confidence": 20,
+          "description": "A contagious respiratory illness caused by the influenza virus, which can lead to fatigue, cough, and other symptoms.",
+          "severity": "Moderate",
+          "recommendations": [
+            "get plenty of rest",
+            "stay hydrated by drinking plenty of fluids",
+            "consider taking antiviral medications like oseltamivir"
+          ]
+        }
+      ],
+      "general_advice": "If your symptoms worsen or you experience difficulty breathing, chest pain, or a fever over 102\u00b0F, seek medical attention. Otherwise, focus on managing your symptoms and supporting your immune system through a balanced diet, adequate sleep, and good hygiene practices.",
+      "seek_emergency": false,
+      "disclaimer": "This is not a substitute for professional medical advice."
+    },
+    "timestamp": "2026-05-02 10:07:11"
+  }
+]
